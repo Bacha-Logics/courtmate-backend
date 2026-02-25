@@ -39,7 +39,6 @@ def reminder_job():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-    # Only run scheduler in production or development explicitly
     if not scheduler.running:
         scheduler.add_job(
             reminder_job,
@@ -71,17 +70,15 @@ app = FastAPI(
 )
 
 # ============================================================
-# CORS
+# CORS (FIXED FOR VERCEL + LOCALHOST)
 # ============================================================
-
-origins = [
-    "http://localhost:3000",
-    "https://your-vercel-app.vercel.app",  # 🔴 Replace after deploy
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[
+        "http://localhost:3000",
+    ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
